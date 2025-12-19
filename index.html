@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Rental Service</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+    <h2>CarRental</h2>
+    <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#cars">Cars</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button onclick="openPopup()">Login / Register</button>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+    <h1>Find Your Perfect Ride</h1>
+    <p>Rent affordable and luxury cars with fast booking and delivery.</p>
+    <button onclick="openPopup()">Book Now</button>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <h1>About Us</h1>
+    <p>We provide the best car rental experience with affordable rates and clean vehicles.</p>
+</section>
+
+<!-- CARS SIMPLE -->
+<section id="cars">
+    <h1>Our Cars</h1>
+    <div class="car-list">
+      <div class="car-item">
+        <h3>Red Sports Car</h3>
+        <p>Fast, stylish, and perfect for city drives.</p>
+      </div>
+      <div class="car-item">
+        <h3>Luxury SUV</h3>
+        <p>Spacious, comfortable, and ideal for family trips.</p>
+      </div>
+      <div class="car-item">
+        <h3>Elegant Sedan</h3>
+        <p>Comfortable and reliable for city and highway rides.</p>
+      </div>
+      <div class="car-item">
+        <h3>Convertible</h3>
+        <p>Experience freedom and style with an open roof.</p>
+      </div>
+    </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+    <h1>Pricing</h1>
+    <div class="pricing-cards">
+      <div class="card"><h2>Daily</h2><p>$50/day</p></div>
+      <div class="card"><h2>Weekly</h2><p>$300/week</p></div>
+      <div class="card"><h2>Monthly</h2><p>$1000/month</p></div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <h1>Contact Us</h1>
+    <p>
+        <span>Email: support@carrental.com</span>
+        <span>Phone: +977-9823099324</span>
+    </p>
+</section>
+
+<!-- POPUP -->
+<div class="popup-bg" id="popup">
+    <div class="popup">
+        <span class="close" onclick="closePopup()">X</span>
+        <h2>Login / Register</h2>
+        <input type="text" placeholder="Email">
+        <input type="password" placeholder="Password">
+        <button>Login</button>
+        <button class="register-btn">Register</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
