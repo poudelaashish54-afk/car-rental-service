@@ -331,6 +331,68 @@ nav button:hover {
   font-size: 18px;
 }
 
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  display: none;
+  font-size: 14px;
+}
+
+.error-message.show {
+  display: block;
+}
+
+.toggle-text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.toggle-text a {
+  color: #ff9800;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.toggle-text a:hover {
+  text-decoration: underline;
+}
+
+#user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+#user-info span {
+  color: white;
+  font-size: 14px;
+}
+
+#user-info button {
+  background: #dc3545;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: .3s;
+  font-weight: 600;
+}
+
+#user-info button:hover {
+  background: #c82333;
+}
+
+.popup button {
+  background: #000;
+  color: white;
+}
+
 /* RESPONSIVE */
 @media(max-width:768px) {
   .pricing-cards {

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Car - CarRental</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="booking-style.css">
+</head>
+<body>
+
+<nav id="navbar">
+    <h2>CarRental</h2>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#cars">Cars</a></li>
+        <li><a href="index.html#pricing">Pricing</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <div id="auth-buttons">
+        <button onclick="openPopup()">Login / Register</button>
+    </div>
+    <div id="user-info" style="display:none;">
+        <span id="user-email"></span>
+        <button onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<section class="booking-section">
+    <div class="booking-container">
+        <h1>Book Your Car</h1>
+        <p class="subtitle">Fill out the form below to reserve your vehicle</p>
+
+        <form id="booking-form">
+            <div class="form-group">
+                <label for="car-select">Select Car</label>
+                <select id="car-select" required>
+                    <option value="">Choose a car...</option>
+                    <option value="Red Sports Car">Red Sports Car - $50/day</option>
+                    <option value="Luxury SUV">Luxury SUV - $80/day</option>
+                    <option value="Elegant Sedan">Elegant Sedan - $60/day</option>
+                    <option value="Convertible">Convertible - $90/day</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="start-date">Start Date</label>
+                    <input type="date" id="start-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="end-date">End Date</label>
+                    <input type="date" id="end-date" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="full-name">Full Name</label>
+                <input type="text" id="full-name" placeholder="John Doe" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="john@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" placeholder="+977-9823099324" required>
+            </div>
+
+            <div class="price-display">
+                <span>Estimated Total: <strong id="total-price">$0</strong></span>
+            </div>
+
+            <button type="submit" class="submit-btn">Confirm Booking</button>
+        </form>
+
+        <div id="booking-message" class="message"></div>
+
+        <div class="my-bookings">
+            <h2>My Bookings</h2>
+            <div id="bookings-list"></div>
+        </div>
+    </div>
+</section>
+
+<div class="popup-bg" id="popup">
+    <div class="popup">
+        <span class="close" onclick="closePopup()">X</span>
+        <h2 id="popup-title">Login</h2>
+        <div id="auth-error" class="error-message"></div>
+
+        <div id="login-form">
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Password">
+            <button onclick="handleLogin()">Login</button>
+            <p class="toggle-text">Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+        </div>
+
+        <div id="register-form" style="display:none;">
+            <input type="email" id="register-email" placeholder="Email">
+            <input type="password" id="register-password" placeholder="Password (min 6 characters)">
+            <input type="password" id="register-confirm" placeholder="Confirm Password">
+            <button onclick="handleRegister()">Register</button>
+            <p class="toggle-text">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="booking.js"></script>
+</body>
+</html>

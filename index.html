@@ -18,14 +18,20 @@
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#contact">Contact</a></li>
     </ul>
-    <button onclick="openPopup()">Login / Register</button>
+    <div id="auth-buttons">
+        <button onclick="openPopup()">Login / Register</button>
+    </div>
+    <div id="user-info" style="display:none;">
+        <span id="user-email"></span>
+        <button onclick="logout()">Logout</button>
+    </div>
 </nav>
 
 <!-- HERO -->
 <section id="home">
     <h1>Find Your Perfect Ride</h1>
     <p>Rent affordable and luxury cars with fast booking and delivery.</p>
-    <button onclick="openPopup()">Book Now</button>
+    <button onclick="window.location.href='booking.html'">Book Now</button>
 </section>
 
 <!-- ABOUT -->
@@ -80,14 +86,26 @@
 <div class="popup-bg" id="popup">
     <div class="popup">
         <span class="close" onclick="closePopup()">X</span>
-        <h2>Login / Register</h2>
-        <input type="text" placeholder="Email">
-        <input type="password" placeholder="Password">
-        <button>Login</button>
-        <button class="register-btn">Register</button>
+        <h2 id="popup-title">Login</h2>
+        <div id="auth-error" class="error-message"></div>
+
+        <div id="login-form">
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Password">
+            <button onclick="handleLogin()">Login</button>
+            <p class="toggle-text">Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+        </div>
+
+        <div id="register-form" style="display:none;">
+            <input type="email" id="register-email" placeholder="Email">
+            <input type="password" id="register-password" placeholder="Password (min 6 characters)">
+            <input type="password" id="register-confirm" placeholder="Confirm Password">
+            <button onclick="handleRegister()">Register</button>
+            <p class="toggle-text">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+        </div>
     </div>
 </div>
 
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
