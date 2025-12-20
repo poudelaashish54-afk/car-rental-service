@@ -1,21 +1,21 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 let currentUser = null;
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', function() {
   checkAuth();
   setupScrollEffect();
 });
 
 async function checkAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    updateUIForLoggedInUser();
+  try {
+    const response = await fetch('auth/check_session.php');
+    const data = await response.json();
+
+    if (data.authenticated) {
+      currentUser = data.user;
+      updateUIForLoggedInUser();
+    }
+  } catch (error) {
+    console.error('Error checking auth:', error);
   }
 }
 
@@ -34,7 +34,7 @@ function updateUIForLoggedInUser() {
 function setupScrollEffect() {
   const navbar = document.getElementById('navbar');
   if (navbar) {
-    window.addEventListener('scroll', () => {
+    window.addEventListener('scroll', function() {
       if (window.scrollY > 50) {
         navbar.classList.add('scrolled');
       } else {
@@ -44,29 +44,29 @@ function setupScrollEffect() {
   }
 }
 
-window.openPopup = function() {
+function openPopup() {
   document.getElementById('popup').style.display = 'flex';
   showLogin();
-};
+}
 
-window.closePopup = function() {
+function closePopup() {
   document.getElementById('popup').style.display = 'none';
   clearAuthError();
-};
+}
 
-window.showLogin = function() {
+function showLogin() {
   document.getElementById('popup-title').textContent = 'Login';
   document.getElementById('login-form').style.display = 'block';
   document.getElementById('register-form').style.display = 'none';
   clearAuthError();
-};
+}
 
-window.showRegister = function() {
+function showRegister() {
   document.getElementById('popup-title').textContent = 'Register';
   document.getElementById('login-form').style.display = 'none';
   document.getElementById('register-form').style.display = 'block';
   clearAuthError();
-};
+}
 
 function clearAuthError() {
   const errorDiv = document.getElementById('auth-error');
@@ -84,7 +84,7 @@ function showAuthError(message) {
   }
 }
 
-window.handleLogin = async function() {
+async function handleLogin() {
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
 
@@ -94,26 +94,30 @@ window.handleLogin = async function() {
   }
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
+    const response = await fetch('auth/login.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email, password: password })
     });
 
-    if (error) throw error;
+    const data = await response.json();
+
+    if (!response.ok) {
+      showAuthError(data.error || 'Login failed');
+      return;
+    }
 
     currentUser = data.user;
     closePopup();
     updateUIForLoggedInUser();
-
-    if (window.location.pathname.includes('booking.html')) {
-      window.location.reload();
-    }
   } catch (error) {
-    showAuthError(error.message);
+    showAuthError('An error occurred. Please try again.');
   }
-};
+}
 
-window.handleRegister = async function() {
+async function handleRegister() {
   const email = document.getElementById('register-email').value;
   const password = document.getElementById('register-password').value;
   const confirmPassword = document.getElementById('register-confirm').value;
@@ -134,30 +138,33 @@ window.handleRegister = async function() {
   }
 
   try {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
+    const response = await fetch('auth/register.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email, password: password, confirmPassword: confirmPassword })
     });
 
-    if (error) throw error;
+    const data = await response.json();
+
+    if (!response.ok) {
+      showAuthError(data.error || 'Registration failed');
+      return;
+    }
 
     currentUser = data.user;
     closePopup();
     updateUIForLoggedInUser();
-
-    if (window.location.pathname.includes('booking.html')) {
-      window.location.reload();
-    } else {
-      alert('Registration successful! You can now book a car.');
-    }
+    alert('Registration successful! You can now book a car.');
   } catch (error) {
-    showAuthError(error.message);
+    showAuthError('An error occurred. Please try again.');
   }
-};
+}
 
-window.logout = async function() {
+async function logout() {
   try {
-    await supabase.auth.signOut();
+    await fetch('auth/logout.php');
     currentUser = null;
 
     const authButtons = document.getElementById('auth-buttons');
@@ -172,8 +179,6 @@ window.logout = async function() {
       window.location.href = 'index.html';
     }
   } catch (error) {
-    alert('Error logging out: ' + error.message);
+    alert('Error logging out. Please try again.');
   }
-};
-
-export { supabase, currentUser };
+}

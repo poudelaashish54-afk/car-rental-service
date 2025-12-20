@@ -1,9 +1,3 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 let currentUser = null;
 
 const carPrices = {
@@ -13,7 +7,7 @@ const carPrices = {
   'Convertible': 90
 };
 
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', async function() {
   await checkAuth();
   setupScrollEffect();
   setupFormListeners();
@@ -21,18 +15,25 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function checkAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
+  try {
+    const response = await fetch('auth/check_session.php');
+    const data = await response.json();
 
-  if (!session) {
-    alert('Please login to book a car');
+    if (!data.authenticated) {
+      alert('Please login to book a car');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    currentUser = data.user;
+    updateUIForLoggedInUser();
+
+    document.getElementById('email').value = currentUser.email;
+  } catch (error) {
+    console.error('Error checking auth:', error);
+    alert('Error checking authentication');
     window.location.href = 'index.html';
-    return;
   }
-
-  currentUser = session.user;
-  updateUIForLoggedInUser();
-
-  document.getElementById('email').value = currentUser.email;
 }
 
 function updateUIForLoggedInUser() {
@@ -50,7 +51,7 @@ function updateUIForLoggedInUser() {
 function setupScrollEffect() {
   const navbar = document.getElementById('navbar');
   if (navbar) {
-    window.addEventListener('scroll', () => {
+    window.addEventListener('scroll', function() {
       if (window.scrollY > 50) {
         navbar.classList.add('scrolled');
       } else {
@@ -71,7 +72,7 @@ function setupFormListeners() {
   endDate.setAttribute('min', today);
 
   carSelect.addEventListener('change', calculatePrice);
-  startDate.addEventListener('change', () => {
+  startDate.addEventListener('change', function() {
     endDate.setAttribute('min', startDate.value);
     calculatePrice();
   });
@@ -94,7 +95,7 @@ function calculatePrice() {
     const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
     const pricePerDay = carPrices[car];
     const total = days * pricePerDay;
-    totalPriceEl.textContent = `$${total}`;
+    totalPriceEl.textContent = '$' + total;
   } else {
     totalPriceEl.textContent = '$0';
   }
@@ -109,30 +110,36 @@ async function handleBooking(e) {
   }
 
   const formData = {
-    user_id: currentUser.id,
     car_name: document.getElementById('car-select').value,
     start_date: document.getElementById('start-date').value,
     end_date: document.getElementById('end-date').value,
     full_name: document.getElementById('full-name').value,
     email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    status: 'pending'
+    phone: document.getElementById('phone').value
   };
 
   try {
-    const { data, error } = await supabase
-      .from('bookings')
-      .insert([formData])
-      .select();
+    const response = await fetch('bookings/create_booking.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
 
-    if (error) throw error;
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error || 'Error creating booking', 'error');
+      return;
+    }
 
     showMessage('Booking confirmed! Check your email for details.', 'success');
     document.getElementById('booking-form').reset();
     document.getElementById('total-price').textContent = '$0';
     await loadBookings();
   } catch (error) {
-    showMessage('Error creating booking: ' + error.message, 'error');
+    showMessage('Error creating booking. Please try again.', 'error');
   }
 }
 
@@ -140,15 +147,15 @@ async function loadBookings() {
   if (!currentUser) return;
 
   try {
-    const { data, error } = await supabase
-      .from('bookings')
-      .select('*')
-      .eq('user_id', currentUser.id)
-      .order('created_at', { ascending: false });
+    const response = await fetch('bookings/get_bookings.php');
+    const data = await response.json();
 
-    if (error) throw error;
+    if (!response.ok) {
+      console.error('Error loading bookings:', data.error);
+      return;
+    }
 
-    displayBookings(data);
+    displayBookings(data.bookings);
   } catch (error) {
     console.error('Error loading bookings:', error);
   }
@@ -162,16 +169,16 @@ function displayBookings(bookings) {
     return;
   }
 
-  bookingsList.innerHTML = bookings.map(booking => `
-    <div class="booking-card">
-      <h3>${booking.car_name}</h3>
-      <p><strong>Name:</strong> ${booking.full_name}</p>
-      <p><strong>Dates:</strong> ${formatDate(booking.start_date)} to ${formatDate(booking.end_date)}</p>
-      <p><strong>Phone:</strong> ${booking.phone}</p>
-      <span class="status ${booking.status}">${booking.status}</span>
-      <button class="delete-btn" onclick="deleteBooking('${booking.id}')">Cancel Booking</button>
-    </div>
-  `).join('');
+  bookingsList.innerHTML = bookings.map(function(booking) {
+    return '<div class="booking-card">' +
+      '<h3>' + booking.car_name + '</h3>' +
+      '<p><strong>Name:</strong> ' + booking.full_name + '</p>' +
+      '<p><strong>Dates:</strong> ' + formatDate(booking.start_date) + ' to ' + formatDate(booking.end_date) + '</p>' +
+      '<p><strong>Phone:</strong> ' + booking.phone + '</p>' +
+      '<span class="status ' + booking.status + '">' + booking.status + '</span>' +
+      '<button class="delete-btn" onclick="deleteBooking(' + booking.id + ')">Cancel Booking</button>' +
+      '</div>';
+  }).join('');
 }
 
 function formatDate(dateString) {
@@ -179,60 +186,68 @@ function formatDate(dateString) {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-window.deleteBooking = async function(bookingId) {
+async function deleteBooking(bookingId) {
   if (!confirm('Are you sure you want to cancel this booking?')) {
     return;
   }
 
   try {
-    const { error } = await supabase
-      .from('bookings')
-      .delete()
-      .eq('id', bookingId);
+    const response = await fetch('bookings/delete_booking.php', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ booking_id: bookingId })
+    });
 
-    if (error) throw error;
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error || 'Error cancelling booking', 'error');
+      return;
+    }
 
     showMessage('Booking cancelled successfully', 'success');
     await loadBookings();
   } catch (error) {
-    showMessage('Error cancelling booking: ' + error.message, 'error');
+    showMessage('Error cancelling booking. Please try again.', 'error');
   }
-};
+}
 
 function showMessage(message, type) {
   const messageDiv = document.getElementById('booking-message');
   messageDiv.textContent = message;
-  messageDiv.className = `message ${type}`;
+  messageDiv.className = 'message ' + type;
   messageDiv.style.display = 'block';
 
-  setTimeout(() => {
+  setTimeout(function() {
     messageDiv.style.display = 'none';
   }, 5000);
 }
 
-window.openPopup = function() {
+function openPopup() {
   document.getElementById('popup').style.display = 'flex';
   showLogin();
-};
+}
 
-window.closePopup = function() {
+function closePopup() {
   document.getElementById('popup').style.display = 'none';
   clearAuthError();
-};
+}
 
-window.showLogin = function() {
+function showLogin() {
   document.getElementById('popup-title').textContent = 'Login';
   document.getElementById('login-form').style.display = 'block';
   document.getElementById('register-form').style.display = 'none';
   clearAuthError();
-};
+}
 
-window.showRegister = function() {
+function showRegister() {
   document.getElementById('popup-title').textContent = 'Register';
   document.getElementById('login-form').style.display = 'none';
   document.getElementById('register-form').style.display = 'block';
   clearAuthError();
-};
+}
 
 function clearAuthError() {
   const errorDiv = document.getElementById('auth-error');
@@ -250,7 +265,7 @@ function showAuthError(message) {
   }
 }
 
-window.handleLogin = async function() {
+async function handleLogin() {
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
 
@@ -260,22 +275,30 @@ window.handleLogin = async function() {
   }
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
+    const response = await fetch('auth/login.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email, password: password })
     });
 
-    if (error) throw error;
+    const data = await response.json();
+
+    if (!response.ok) {
+      showAuthError(data.error || 'Login failed');
+      return;
+    }
 
     currentUser = data.user;
     closePopup();
     window.location.reload();
   } catch (error) {
-    showAuthError(error.message);
+    showAuthError('An error occurred. Please try again.');
   }
-};
+}
 
-window.handleRegister = async function() {
+async function handleRegister() {
   const email = document.getElementById('register-email').value;
   const password = document.getElementById('register-password').value;
   const confirmPassword = document.getElementById('register-confirm').value;
@@ -296,27 +319,35 @@ window.handleRegister = async function() {
   }
 
   try {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
+    const response = await fetch('auth/register.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email, password: password, confirmPassword: confirmPassword })
     });
 
-    if (error) throw error;
+    const data = await response.json();
+
+    if (!response.ok) {
+      showAuthError(data.error || 'Registration failed');
+      return;
+    }
 
     currentUser = data.user;
     closePopup();
     window.location.reload();
   } catch (error) {
-    showAuthError(error.message);
+    showAuthError('An error occurred. Please try again.');
   }
-};
+}
 
-window.logout = async function() {
+async function logout() {
   try {
-    await supabase.auth.signOut();
+    await fetch('auth/logout.php');
     currentUser = null;
     window.location.href = 'index.html';
   } catch (error) {
-    alert('Error logging out: ' + error.message);
+    alert('Error logging out. Please try again.');
   }
-};
+}

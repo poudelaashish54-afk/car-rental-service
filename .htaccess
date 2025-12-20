@@ -1,0 +1,21 @@
+# Enable PHP session handling
+php_value session.auto_start 0
+
+# Set default file for directory requests
+DirectoryIndex index.html index.php
+
+# Enable URL rewriting (optional)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
