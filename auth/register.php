@@ -11,11 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $data = json_decode(file_get_contents('php://input'), true);
 
+$name = $data['name'] ?? '';
 $email = filter_var($data['email'] ?? '', FILTER_SANITIZE_EMAIL);
 $password = $data['password'] ?? '';
 $confirmPassword = $data['confirmPassword'] ?? '';
 
-if (empty($email) || empty($password) || empty($confirmPassword)) {
+if (empty($name) || empty($email) || empty($password) || empty($confirmPassword)) {
     http_response_code(400);
     echo json_encode(['error' => 'All fields are required']);
     exit;
@@ -56,18 +57,20 @@ if ($result->num_rows > 0) {
 
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-$stmt = $conn->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
-$stmt->bind_param("ss", $email, $hashedPassword);
+$stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $name, $email, $hashedPassword);
 
 if ($stmt->execute()) {
     $userId = $conn->insert_id;
     $_SESSION['user_id'] = $userId;
+    $_SESSION['user_name'] = $name;
     $_SESSION['user_email'] = $email;
 
     echo json_encode([
         'success' => true,
         'user' => [
             'id' => $userId,
+            'name' => $name,
             'email' => $email
         ]
     ]);

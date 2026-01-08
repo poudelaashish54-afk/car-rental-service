@@ -13,10 +13,9 @@
     <h2>CarRental</h2>
     <ul>
         <li><a href="index.html">Home</a></li>
-        <li><a href="index.html#about">About</a></li>
-        <li><a href="index.html#cars">Cars</a></li>
-        <li><a href="index.html#pricing">Pricing</a></li>
-        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="cars-manage.html">Manage Cars</a></li>
+        <li><a href="booking.html">Book a Car</a></li>
     </ul>
     <div id="auth-buttons">
         <button onclick="openPopup()">Login / Register</button>
@@ -37,10 +36,6 @@
                 <label for="car-select">Select Car</label>
                 <select id="car-select" required>
                     <option value="">Choose a car...</option>
-                    <option value="Red Sports Car">Red Sports Car - $50/day</option>
-                    <option value="Luxury SUV">Luxury SUV - $80/day</option>
-                    <option value="Elegant Sedan">Elegant Sedan - $60/day</option>
-                    <option value="Convertible">Convertible - $90/day</option>
                 </select>
             </div>
 
@@ -100,6 +95,7 @@
         </div>
 
         <div id="register-form" style="display:none;">
+            <input type="text" id="register-name" placeholder="Full Name">
             <input type="email" id="register-email" placeholder="Email">
             <input type="password" id="register-password" placeholder="Password (min 6 characters)">
             <input type="password" id="register-confirm" placeholder="Confirm Password">

@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $conn = getDBConnection();
 
-$stmt = $conn->prepare("SELECT id, car_name, start_date, end_date, full_name, email, phone, status, created_at FROM bookings WHERE user_id = ? ORDER BY created_at DESC");
+$stmt = $conn->prepare("SELECT b.id, b.car_id, c.model as car_model, b.start_date, b.end_date, b.full_name, b.email, b.phone, b.status, b.created_at FROM bookings b INNER JOIN cars c ON b.car_id = c.id WHERE b.user_id = ? ORDER BY b.created_at DESC");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();

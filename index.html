@@ -10,12 +10,18 @@
 
 <nav id="navbar">
     <h2>CarRental</h2>
-    <ul>
+    <ul id="nav-links">
         <li><a href="#home">Home</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#cars">Cars</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#contact">Contact</a></li>
+    </ul>
+    <ul id="nav-links-logged-in" style="display:none;">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="cars-manage.html">Manage Cars</a></li>
+        <li><a href="booking.html">Book a Car</a></li>
     </ul>
     <div id="auth-buttons">
         <button onclick="openPopup()">Login / Register</button>
@@ -90,6 +96,7 @@
         </div>
 
         <div id="register-form" style="display:none;">
+            <input type="text" id="register-name" placeholder="Full Name">
             <input type="email" id="register-email" placeholder="Email">
             <input type="password" id="register-password" placeholder="Password (min 6 characters)">
             <input type="password" id="register-confirm" placeholder="Confirm Password">

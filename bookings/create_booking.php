@@ -18,14 +18,14 @@ if (!isset($_SESSION['user_id'])) {
 $data = json_decode(file_get_contents('php://input'), true);
 
 $userId = $_SESSION['user_id'];
-$carName = $data['car_name'] ?? '';
+$carId = $data['car_id'] ?? 0;
 $startDate = $data['start_date'] ?? '';
 $endDate = $data['end_date'] ?? '';
 $fullName = $data['full_name'] ?? '';
 $email = filter_var($data['email'] ?? '', FILTER_SANITIZE_EMAIL);
 $phone = $data['phone'] ?? '';
 
-if (empty($carName) || empty($startDate) || empty($endDate) || empty($fullName) || empty($email) || empty($phone)) {
+if (empty($carId) || empty($startDate) || empty($endDate) || empty($fullName) || empty($email) || empty($phone)) {
     http_response_code(400);
     echo json_encode(['error' => 'All fields are required']);
     exit;
@@ -33,8 +33,8 @@ if (empty($carName) || empty($startDate) || empty($endDate) || empty($fullName) 
 
 $conn = getDBConnection();
 
-$stmt = $conn->prepare("INSERT INTO bookings (user_id, car_name, start_date, end_date, full_name, email, phone, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')");
-$stmt->bind_param("issssss", $userId, $carName, $startDate, $endDate, $fullName, $email, $phone);
+$stmt = $conn->prepare("INSERT INTO bookings (user_id, car_id, start_date, end_date, full_name, email, phone, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')");
+$stmt->bind_param("iissssss", $userId, $carId, $startDate, $endDate, $fullName, $email, $phone);
 
 if ($stmt->execute()) {
     $bookingId = $conn->insert_id;
@@ -44,7 +44,7 @@ if ($stmt->execute()) {
         'booking' => [
             'id' => $bookingId,
             'user_id' => $userId,
-            'car_name' => $carName,
+            'car_id' => $carId,
             'start_date' => $startDate,
             'end_date' => $endDate,
             'full_name' => $fullName,

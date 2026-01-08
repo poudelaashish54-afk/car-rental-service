@@ -23,11 +23,18 @@ function updateUIForLoggedInUser() {
   const authButtons = document.getElementById('auth-buttons');
   const userInfo = document.getElementById('user-info');
   const userEmail = document.getElementById('user-email');
+  const navLinks = document.getElementById('nav-links');
+  const navLinksLoggedIn = document.getElementById('nav-links-logged-in');
 
   if (authButtons && userInfo && currentUser) {
     authButtons.style.display = 'none';
     userInfo.style.display = 'flex';
     userEmail.textContent = currentUser.email;
+
+    if (navLinks && navLinksLoggedIn) {
+      navLinks.style.display = 'none';
+      navLinksLoggedIn.style.display = 'flex';
+    }
   }
 }
 
@@ -118,11 +125,12 @@ async function handleLogin() {
 }
 
 async function handleRegister() {
+  const name = document.getElementById('register-name').value;
   const email = document.getElementById('register-email').value;
   const password = document.getElementById('register-password').value;
   const confirmPassword = document.getElementById('register-confirm').value;
 
-  if (!email || !password || !confirmPassword) {
+  if (!name || !email || !password || !confirmPassword) {
     showAuthError('Please fill in all fields');
     return;
   }
@@ -143,7 +151,7 @@ async function handleRegister() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email: email, password: password, confirmPassword: confirmPassword })
+      body: JSON.stringify({ name: name, email: email, password: password, confirmPassword: confirmPassword })
     });
 
     const data = await response.json();

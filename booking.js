@@ -1,15 +1,10 @@
 let currentUser = null;
-
-const carPrices = {
-  'Red Sports Car': 50,
-  'Luxury SUV': 80,
-  'Elegant Sedan': 60,
-  'Convertible': 90
-};
+let availableCars = [];
 
 window.addEventListener('DOMContentLoaded', async function() {
   await checkAuth();
   setupScrollEffect();
+  await loadCars();
   setupFormListeners();
   await loadBookings();
 });
@@ -61,6 +56,36 @@ function setupScrollEffect() {
   }
 }
 
+async function loadCars() {
+  try {
+    const response = await fetch('api/get_cars.php');
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage('Error loading cars', 'error');
+      return;
+    }
+
+    availableCars = data.cars.filter(function(car) {
+      return car.status === 'available';
+    });
+
+    const carSelect = document.getElementById('car-select');
+    carSelect.innerHTML = '<option value="">Choose a car...</option>';
+
+    availableCars.forEach(function(car) {
+      const option = document.createElement('option');
+      option.value = car.id;
+      option.textContent = car.model + ' - $' + parseFloat(car.price_per_day).toFixed(2) + '/day';
+      option.setAttribute('data-price', car.price_per_day);
+      carSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error loading cars:', error);
+    showMessage('Error loading cars', 'error');
+  }
+}
+
 function setupFormListeners() {
   const form = document.getElementById('booking-form');
   const carSelect = document.getElementById('car-select');
@@ -87,15 +112,16 @@ function calculatePrice() {
   const endDate = document.getElementById('end-date');
   const totalPriceEl = document.getElementById('total-price');
 
-  const car = carSelect.value;
+  const selectedOption = carSelect.options[carSelect.selectedIndex];
+  const pricePerDay = parseFloat(selectedOption.getAttribute('data-price'));
+
   const start = new Date(startDate.value);
   const end = new Date(endDate.value);
 
-  if (car && startDate.value && endDate.value && end >= start) {
+  if (carSelect.value && startDate.value && endDate.value && end >= start && pricePerDay) {
     const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-    const pricePerDay = carPrices[car];
     const total = days * pricePerDay;
-    totalPriceEl.textContent = '$' + total;
+    totalPriceEl.textContent = '$' + total.toFixed(2);
   } else {
     totalPriceEl.textContent = '$0';
   }
@@ -110,7 +136,7 @@ async function handleBooking(e) {
   }
 
   const formData = {
-    car_name: document.getElementById('car-select').value,
+    car_id: document.getElementById('car-select').value,
     start_date: document.getElementById('start-date').value,
     end_date: document.getElementById('end-date').value,
     full_name: document.getElementById('full-name').value,
@@ -171,7 +197,7 @@ function displayBookings(bookings) {
 
   bookingsList.innerHTML = bookings.map(function(booking) {
     return '<div class="booking-card">' +
-      '<h3>' + booking.car_name + '</h3>' +
+      '<h3>' + booking.car_model + '</h3>' +
       '<p><strong>Name:</strong> ' + booking.full_name + '</p>' +
       '<p><strong>Dates:</strong> ' + formatDate(booking.start_date) + ' to ' + formatDate(booking.end_date) + '</p>' +
       '<p><strong>Phone:</strong> ' + booking.phone + '</p>' +
@@ -299,11 +325,12 @@ async function handleLogin() {
 }
 
 async function handleRegister() {
+  const name = document.getElementById('register-name').value;
   const email = document.getElementById('register-email').value;
   const password = document.getElementById('register-password').value;
   const confirmPassword = document.getElementById('register-confirm').value;
 
-  if (!email || !password || !confirmPassword) {
+  if (!name || !email || !password || !confirmPassword) {
     showAuthError('Please fill in all fields');
     return;
   }
@@ -324,7 +351,7 @@ async function handleRegister() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email: email, password: password, confirmPassword: confirmPassword })
+      body: JSON.stringify({ name: name, email: email, password: password, confirmPassword: confirmPassword })
     });
 
     const data = await response.json();

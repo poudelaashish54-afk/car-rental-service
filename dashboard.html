@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - CarRental</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="dashboard-style.css">
+</head>
+<body>
+
+<nav id="navbar">
+    <h2>CarRental</h2>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="cars-manage.html">Manage Cars</a></li>
+        <li><a href="booking.html">Book a Car</a></li>
+    </ul>
+    <div id="user-info" style="display:none;">
+        <span id="user-email"></span>
+        <button onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<section class="dashboard-section">
+    <div class="dashboard-container">
+        <h1>Dashboard</h1>
+        <p class="subtitle">Welcome back, <span id="user-name">User</span>!</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🚗</div>
+                <div class="stat-info">
+                    <h3 id="total-cars">0</h3>
+                    <p>Total Cars</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3 id="available-cars">0</h3>
+                    <p>Available Cars</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                    <h3 id="total-bookings">0</h3>
+                    <p>My Bookings</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-info">
+                    <h3 id="pending-bookings">0</h3>
+                    <p>Pending</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-buttons">
+                <button onclick="window.location.href='booking.html'" class="action-btn primary">Book a Car</button>
+                <button onclick="window.location.href='cars-manage.html'" class="action-btn secondary">Manage Cars</button>
+                <button onclick="loadRecentBookings()" class="action-btn tertiary">View Bookings</button>
+            </div>
+        </div>
+
+        <div class="recent-bookings">
+            <h2>Recent Bookings</h2>
+            <div id="recent-bookings-list"></div>
+        </div>
+    </div>
+</section>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Cars - CarRental</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="cars-manage-style.css">
+</head>
+<body>
+
+<nav id="navbar">
+    <h2>CarRental</h2>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="cars-manage.html">Manage Cars</a></li>
+        <li><a href="booking.html">Book a Car</a></li>
+    </ul>
+    <div id="user-info" style="display:none;">
+        <span id="user-email"></span>
+        <button onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<section class="cars-section">
+    <div class="cars-container">
+        <h1>Manage Cars</h1>
+        <p class="subtitle">Add, edit, or remove cars from the inventory</p>
+
+        <button class="add-car-btn" onclick="showAddCarForm()">+ Add New Car</button>
+
+        <div id="add-car-form" class="car-form" style="display:none;">
+            <h2>Add New Car</h2>
+            <form id="car-form">
+                <div class="form-group">
+                    <label for="model">Car Model</label>
+                    <input type="text" id="model" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Price Per Day ($)</label>
+                    <input type="number" id="price" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" required>
+                        <option value="available">Available</option>
+                        <option value="rented">Rented</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="image_url">Image URL (optional)</label>
+                    <input type="url" id="image_url">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">Add Car</button>
+                    <button type="button" class="cancel-btn" onclick="hideAddCarForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="edit-car-form" class="car-form" style="display:none;">
+            <h2>Edit Car</h2>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+
+                <div class="form-group">
+                    <label for="edit-model">Car Model</label>
+                    <input type="text" id="edit-model" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-price">Price Per Day ($)</label>
+                    <input type="number" id="edit-price" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-status">Status</label>
+                    <select id="edit-status" required>
+                        <option value="available">Available</option>
+                        <option value="rented">Rented</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-description">Description</label>
+                    <textarea id="edit-description" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-image_url">Image URL (optional)</label>
+                    <input type="url" id="edit-image_url">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">Update Car</button>
+                    <button type="button" class="cancel-btn" onclick="hideEditCarForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div class="cars-list">
+            <h2>Car Inventory</h2>
+            <div class="table-responsive">
+                <table id="cars-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Model</th>
+                            <th>Price/Day</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cars-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="cars-manage.js"></script>
+</body>
+</html>
